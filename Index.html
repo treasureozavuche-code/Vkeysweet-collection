@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>VKEYSWEET COLLECTION — Store + Admin</title>
+<style>
+*{box-sizing:border-box}
+:root{
+  --pink:#ff4f9a;--pink2:#ff78b4;--purple:#7c3aed;--ink:#24152d;
+  --muted:#7c6b82;--card:#fff;--bg:#fff7fb;--line:#f0dce8;
+}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;background:var(--bg);color:var(--ink)}
+button,input{font:inherit}
+button{cursor:pointer;border:0;border-radius:14px;padding:11px 16px;font-weight:800;transition:.2s}
+button:hover{transform:translateY(-1px)}
+button:disabled{opacity:.55;cursor:not-allowed}
+.blue{background:linear-gradient(135deg,var(--pink),var(--purple));color:#fff;box-shadow:0 8px 20px #ff4f9a35}
+.dark{background:#26182e;color:#fff}
+.red{background:#e54870;color:#fff}
+
+header{
+  background:#fff9fcdd;backdrop-filter:blur(16px);border-bottom:1px solid var(--line);
+  color:var(--ink);padding:14px 5%;display:flex;justify-content:space-between;align-items:center;
+  position:sticky;top:0;z-index:30
+}
+.logo{font-size:22px;font-weight:950;letter-spacing:-.6px}
+.logo span{color:var(--pink)}
+.header-actions{display:flex;gap:8px;align-items:center}
+.cart-btn{position:relative}
+.cart-badge{position:absolute;right:-5px;top:-7px;background:var(--purple);color:#fff;border-radius:99px;font-size:11px;min-width:20px;height:20px;display:grid;place-items:center}
+
+.hero{
+  margin:18px 5% 0;border-radius:28px;padding:48px clamp(24px,6vw,72px);
+  background:
+    radial-gradient(circle at 90% 15%,#ffffff55 0 8%,transparent 9%),
+    radial-gradient(circle at 80% 80%,#ffb6d955 0 12%,transparent 13%),
+    linear-gradient(135deg,#ff4f9a 0%,#b83cf0 55%,#6035d8 100%);
+  color:#fff;position:relative;overflow:hidden;box-shadow:0 18px 45px #8e3cc42b
+}
+.hero:after{content:"";position:absolute;width:220px;height:220px;border:1px solid #fff4;border-radius:50%;right:-70px;bottom:-90px}
+.hero h1{font-size:clamp(34px,6vw,58px);line-height:1.02;letter-spacing:-2px;margin:0 0 14px;max-width:650px}
+.hero p{font-size:17px;line-height:1.6;max-width:590px;margin:0 0 24px;color:#fffdfd}
+.hero-tag{display:inline-flex;padding:8px 13px;border-radius:99px;background:#fff2;color:#fff;border:1px solid #fff4;font-weight:800;font-size:13px;margin-bottom:15px}
+.hero .shop-now{background:#fff;color:#7c237f;box-shadow:none}
+
+.search{padding:22px 5% 8px}
+.search-box{position:relative;max-width:850px;margin:auto}
+.search input{width:100%;padding:16px 18px 16px 48px;border:1px solid var(--line);border-radius:18px;background:#fff;outline:none;font-size:16px;box-shadow:0 8px 25px #6d356d0d}
+.search input:focus{border-color:#e88bb7;box-shadow:0 0 0 4px #ff4f9a15}
+.search-box:before{content:"⌕";position:absolute;left:18px;top:9px;font-size:27px;color:var(--pink);z-index:1}
+
+.container{padding:20px 5% 55px;max-width:1250px;margin:auto}
+.section-head{display:flex;justify-content:space-between;align-items:end;gap:15px;margin:12px 0 20px}
+.section-head h2{font-size:27px;margin:0}.section-head p{margin:4px 0 0;color:var(--muted)}
+.products{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:20px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:22px;overflow:hidden;box-shadow:0 10px 30px #63235d0d;transition:.25s}
+.card:hover{transform:translateY(-5px);box-shadow:0 18px 38px #63235d18}
+.pic{height:190px;background:linear-gradient(145deg,#fff0f7,#f3e9ff);display:flex;align-items:center;justify-content:center;font-size:72px;position:relative}
+.pic:after{content:"V";position:absolute;right:14px;top:10px;font-size:12px;font-weight:950;color:#ff4f9a66}
+.info{padding:17px}.info h3{margin:0;font-size:17px}
+.price{color:var(--pink);font-size:19px;font-weight:950;margin:8px 0}
+.stock{color:var(--muted);font-size:13px}
+.card .dark{width:100%;margin-top:13px}
+
+.cart{position:fixed;right:-440px;top:0;width:min(420px,100%);height:100%;background:#fff;z-index:50;padding:22px;transition:.3s;overflow:auto;box-shadow:-15px 0 45px #3d153b35}
+.cart.open{right:0}
+.cart-top{display:flex;justify-content:space-between;align-items:center}
+.cart-top h2{margin:0}.close-btn{background:#f8edf5;color:var(--ink);padding:9px 12px}
+.item{padding:15px 0;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:12px}
+.item button{background:#fff0f4;color:#d92f65;padding:8px}
+.total{font-size:21px;font-weight:950;margin:22px 0}
+.cart-checkout{width:100%;padding:15px}
+
+.admin{display:none;padding:30px 5%;background:var(--bg);min-height:70vh}.admin.show{display:block}
+.form{display:grid;gap:10px;max-width:650px;margin:18px 0}
+.form input{padding:13px 14px;border:1px solid var(--line);border-radius:12px;outline:none;background:#fff}
+.admin-list{display:grid;gap:10px;max-width:750px}
+.admin-item{padding:15px;background:#fff;border:1px solid var(--line);border-radius:14px;display:flex;justify-content:space-between;gap:10px;align-items:center}
+.admin-item small{color:var(--muted)}
+.admin-item button{padding:8px 11px}
+
+footer{text-align:center;padding:32px 20px;background:#24152d;color:#d9c9dd}
+footer b{color:#ff78b4}
+
+@media(max-width:600px){
+  header{padding:12px 4%}.logo{font-size:18px}
+  .hero{margin:12px 4% 0;border-radius:22px;padding:35px 24px}
+  .hero h1{letter-spacing:-1.4px}.hero p{font-size:15px}
+  .search{padding:18px 4% 5px}.container{padding:18px 4% 45px}
+  .products{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+  .pic{height:145px;font-size:55px}.info{padding:12px}.info h3{font-size:14px}.price{font-size:16px}
+  .card .dark{padding:10px 8px;font-size:12px}
+  .admin-item{align-items:flex-start;flex-direction:column}
+}
+
+/* VKEYSWEET COLLECTION — premium store upgrade */
+body{background:#fff8fc}
+.topbar{display:flex;justify-content:center;gap:22px;flex-wrap:wrap;padding:9px 5%;font-size:12px;font-weight:800;background:#24152d;color:#fff}
+.category-bar{padding:12px 5%;display:flex;gap:9px;overflow:auto;white-space:nowrap;background:#fff;border-bottom:1px solid var(--line)}
+.category-bar button{background:#fff3f8;color:#6d486a;border:1px solid var(--line);padding:9px 15px}
+.category-bar button.active{background:linear-gradient(135deg,var(--pink),var(--purple));color:#fff;border-color:transparent}
+.badge{position:absolute;left:12px;top:12px;background:#24152d;color:#fff;padding:6px 9px;border-radius:99px;font-size:10px;font-weight:900}
+.old-price{text-decoration:line-through;color:#a895a9;font-size:13px;margin-left:5px}
+.product-actions{display:flex;gap:8px;margin-top:10px}.product-actions button{flex:1}
+.fav{background:#fff0f6!important;color:#e73d80!important;padding:9px!important;max-width:44px}
+.quick{background:#fff;border:1px solid var(--line);color:#6d486a}
+.features{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;padding:18px 5%;max-width:1250px;margin:auto}
+.feature{background:#fff;border:1px solid var(--line);border-radius:18px;padding:17px;text-align:center}.feature b{display:block;margin-top:6px}.feature span{font-size:12px;color:var(--muted)}
+.sale{margin:10px 5% 20px;border-radius:20px;padding:18px 22px;background:linear-gradient(135deg,#fff0f7,#f2ebff);display:flex;justify-content:space-between;align-items:center;gap:15px}
+.sale strong{font-size:21px}.countdown{font-weight:950;color:var(--purple)}
+.review-section{padding:25px 5%;background:#fff;margin-top:10px}.reviews{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;max-width:1150px;margin:auto}.review{border:1px solid var(--line);border-radius:18px;padding:18px}.stars{color:#f5a623;letter-spacing:2px}.review p{color:var(--muted);line-height:1.5;font-size:14px}
+.info-section{max-width:1150px;margin:auto;padding:32px 5%;display:grid;grid-template-columns:1fr 1fr;gap:18px}.info-card{background:#fff;border:1px solid var(--line);border-radius:20px;padding:22px}.info-card h3{margin-top:0}
+.product-modal{display:none;position:fixed;inset:0;background:#1e102088;z-index:80;align-items:center;justify-content:center;padding:18px}.product-modal.show{display:flex}
+.modal-card{background:#fff;border-radius:25px;max-width:760px;width:100%;max-height:90vh;overflow:auto;padding:22px}.modal-close{float:right;background:#f7edf5}.modal-grid{display:grid;grid-template-columns:1fr 1fr;gap:25px}.modal-image{min-height:300px;border-radius:20px;background:linear-gradient(145deg,#fff0f7,#f2eaff);display:grid;place-items:center;font-size:100px}.modal-card textarea{width:100%;border:1px solid var(--line);border-radius:12px;padding:12px}
+.order-form{display:grid;gap:10px}.order-form input,.order-form textarea{padding:13px;border:1px solid var(--line);border-radius:12px;outline:none}
+@media(max-width:700px){.features{grid-template-columns:repeat(2,1fr);padding:15px 4%}.reviews,.info-section,.modal-grid{grid-template-columns:1fr}.sale{margin-left:4%;margin-right:4%;align-items:flex-start;flex-direction:column}.modal-image{min-height:210px}}
+
+</style>
+</head>
+<body>
+<header>
+<div class="logo">VKEYSWEET <span>COLLECTION</span></div>
+<div class="header-actions">
+<button class="dark" onclick="adminLogin()">⚙️</button>
+<button class="blue cart-btn" onclick="openCart()">🛍️ <span id="count" class="cart-badge">0</span></button>
+</div>
+</header>
+<div class="topbar"><span>🚚 Fast delivery</span><span>💬 Easy WhatsApp ordering</span><span>✨ New arrivals every week</span></div>
+<nav class="category-bar">
+  <button class="active" onclick="filterCategory('All',this)">All</button>
+  <button onclick="filterCategory('Fashion',this)">👗 Fashion</button>
+  <button onclick="filterCategory('Shoes',this)">👟 Shoes</button>
+  <button onclick="filterCategory('Beauty',this)">💄 Beauty</button>
+  <button onclick="filterCategory('Accessories',this)">👜 Accessories</button>
+  <button onclick="filterCategory('Electronics',this)">📱 Electronics</button>
+</nav>
+
+
+<section id="shop">
+<section class="hero">
+  <div class="hero-tag">✨ NEW COLLECTION • SHOP WITH LOVE</div>
+  <h1>Everything you love, all in one collection.</h1>
+  <p>Discover stylish picks at VKEYSWEET COLLECTION. Add your favorites to your cart and order quickly through WhatsApp.</p>
+  <button class="shop-now" onclick="document.getElementById('products').scrollIntoView({behavior:'smooth'})">Shop Now ✨</button>
+</section>
+<div class="search"><div class="search-box"><input id="search" placeholder="Search products..." oninput="renderProducts()"></div></div>
+
+<section class="features">
+  <div class="feature">🚚<b>Fast Delivery</b><span>Convenient delivery options</span></div>
+  <div class="feature">💬<b>WhatsApp Orders</b><span>Chat and confirm your order</span></div>
+  <div class="feature">🔒<b>Easy Checkout</b><span>Simple and secure ordering</span></div>
+  <div class="feature">💖<b>Quality Picks</b><span>Handpicked products</span></div>
+</section>
+<section class="sale"><div><strong>🔥 Flash Sale</strong><br><span>Grab selected deals before the timer ends.</span></div><div class="countdown" id="countdown">00:00:00</div></section>
+<main class="container">
+  <div class="section-head"><div><h2>Featured Products ✨</h2><p>Fresh picks waiting for you.</p></div></div>
+  <div id="products" class="products"></div>
+</main>
+</section>
+
+<section id="admin" class="admin">
+<h2>⚙️ Admin Dashboard</h2>
+<p>Add, edit, change prices, update stock or delete products. Changes are saved on this device.</p>
+<div class="form">
+<input id="pname" placeholder="Product name">
+<input id="pprice" type="number" placeholder="Price (₦)">
+<input id="pstock" type="number" placeholder="Stock quantity">
+<input id="picon" placeholder="Product emoji e.g. 👟">
+<button class="blue" id="saveBtn" onclick="saveProduct()">➕ Add Product</button>
+<button onclick="closeAdmin()">← Back to Store</button>
+</div>
+<h3>Your Products</h3><div id="adminList" class="admin-list"></div>
+</section>
+
+<aside id="cart" class="cart">
+<div class="cart-top"><h2>Your Cart 🛍️</h2><button class="close-btn" onclick="closeCart()">✕</button></div>
+<div id="cartItems"></div><div class="total">Total: ₦<span id="total">0</span></div>
+
+<div class="order-form" style="margin:12px 0">
+  <input id="custName" placeholder="Your name">
+  <input id="custPhone" placeholder="Your phone number">
+  <textarea id="custAddress" rows="3" placeholder="Delivery address"></textarea>
+</div>
+<button class="blue cart-checkout" onclick="checkout()">💬 Order & Pay via WhatsApp</button>
+</aside>
+
+
+<section class="review-section">
+  <div class="section-head" style="max-width:1150px;margin:auto"><div><h2>What customers say ⭐</h2><p>Simple, friendly shopping.</p></div></div>
+  <div class="reviews">
+    <div class="review"><div class="stars">★★★★★</div><p>“Beautiful products and an easy way to order. I love the WhatsApp checkout.”</p><b>Happy Customer</b></div>
+    <div class="review"><div class="stars">★★★★★</div><p>“The store is clean and easy to use on my phone.”</p><b>Happy Customer</b></div>
+    <div class="review"><div class="stars">★★★★★</div><p>“I found what I wanted quickly and contacted the seller directly.”</p><b>Happy Customer</b></div>
+  </div>
+</section>
+<section class="info-section">
+  <div class="info-card"><h3>About VKEYSWEET COLLECTION 💕</h3><p>Welcome to VKEYSWEET COLLECTION — a stylish online collection built to make discovering and ordering your favorite products simple.</p></div>
+  <div class="info-card"><h3>FAQ ❓</h3><p><b>How do I order?</b><br>Add your items to the cart, enter your details and tap “Order & Pay via WhatsApp”.</p><p><b>Need help?</b><br>Send a WhatsApp message and we'll help you with your order.</p></div>
+</section>
+<footer>© 2026 <b>VKEYSWEET COLLECTION</b> • Shop beautifully. Order easily. 💕</footer>
+
+<script>
+const starter=[
+{id:1,name:"Premium Sneakers",price:25000,stock:10,icon:"👟"},
+{id:2,name:"Smart Watch",price:18000,stock:8,icon:"⌚"},
+{id:3,name:"Wireless Headphones",price:22000,stock:15,icon:"🎧"},
+{id:4,name:"Fashion Hoodie",price:15000,stock:12,icon:"👕"},
+{id:5,name:"Phone Accessories",price:8000,stock:20,icon:"📱"},
+{id:6,name:"Classic Backpack",price:12000,stock:9,icon:"🎒"}
+];
+let products=JSON.parse(localStorage.getItem("adamzybv_products"))||starter;
+let cart=[],editingId=null;
+
+function money(n){return Number(n).toLocaleString("en-NG")}
+function saveData(){localStorage.setItem("adamzybv_products",JSON.stringify(products))}
+function renderProducts(){
+ const q=document.getElementById("search").value.toLowerCase();
+ document.getElementById("products").innerHTML=products.filter(p=>p.name.toLowerCase().includes(q)).map(p=>`
+ <div class="card"><div class="pic">${p.icon||"🛍️"}</div><div class="info">
+ <h3>${p.name}</h3><div class="price">₦${money(p.price)}</div><small class="stock">${p.stock>0?p.stock+" in stock":"Out of stock"}</small><br><br>
+ <button class="dark" ${p.stock<1?"disabled":""} onclick="addCart(${p.id})">${p.stock<1?"Out of Stock":"Add to Cart"}</button>
+ </div></div>`).join("")||"<p>No products found.</p>";
+}
+function addCart(id){let p=products.find(x=>x.id===id);if(!p||p.stock<1)return;let x=cart.find(x=>x.id===id);if(x&&x.qty<p.stock)x.qty++;else if(!x)cart.push({...p,qty:1});renderCart()}
+function renderCart(){document.getElementById("cartItems").innerHTML=cart.length?cart.map(x=>`<div class="item"><span>${x.name}<br>₦${money(x.price)} × ${x.qty}</span><button onclick="removeCart(${x.id})">🗑️</button></div>`).join(""):"<p>Your cart is empty.</p>";let c=cart.reduce((a,x)=>a+x.qty,0),t=cart.reduce((a,x)=>a+x.price*x.qty,0);document.getElementById("count").textContent=c;document.getElementById("total").textContent=money(t)}
+function removeCart(id){cart=cart.filter(x=>x.id!==id);renderCart()}
+function openCart(){document.getElementById("cart").classList.add("open");renderCart()}
+function closeCart(){document.getElementById("cart").classList.remove("open")}
+function adminLogin(){let pass=prompt("Enter your admin password:");if(pass==="1234"){document.getElementById("shop").style.display="none";document.getElementById("admin").classList.add("show");renderAdmin()}else if(pass!==null)alert("Wrong password. Change the password in the code before using this live.");}
+function closeAdmin(){document.getElementById("admin").classList.remove("show");document.getElementById("shop").style.display="block"}
+function renderAdmin(){document.getElementById("adminList").innerHTML=products.map(p=>`<div class="admin-item"><span><b>${p.name}</b><br><small>₦${money(p.price)} • Stock: ${p.stock}</small></span><span><button class="blue" onclick="editProduct(${p.id})">Edit</button><button class="red" onclick="deleteProduct(${p.id})">Delete</button></span></div>`).join("")}
+function saveProduct(){
+let name=document.getElementById("pname").value.trim(),price=Number(document.getElementById("pprice").value),stock=Number(document.getElementById("pstock").value),icon=document.getElementById("picon").value.trim()||"🛍️";
+if(!name||price<0||stock<0){alert("Please enter a product name, valid price and stock.");return}
+if(editingId){let p=products.find(x=>x.id===editingId);Object.assign(p,{name,price,stock,icon});editingId=null;document.getElementById("saveBtn").textContent="➕ Add Product"}else products.push({id:Date.now(),name,price,stock,icon});
+saveData();clearForm();renderAdmin();renderProducts();alert("Product saved successfully!");
+}
+function editProduct(id){let p=products.find(x=>x.id===id);editingId=id;document.getElementById("pname").value=p.name;document.getElementById("pprice").value=p.price;document.getElementById("pstock").value=p.stock;document.getElementById("picon").value=p.icon;document.getElementById("saveBtn").textContent="💾 Save Changes";window.scrollTo(0,0)}
+function deleteProduct(id){if(confirm("Delete this product?")){products=products.filter(x=>x.id!==id);saveData();renderAdmin();renderProducts()}}
+function clearForm(){["pname","pprice","pstock","picon"].forEach(id=>document.getElementById(id).value="")}
+function checkout(){
+  if(!cart.length){alert("Your cart is empty.");return}
+  const lines=cart.map(i=>`${i.name} x${i.qty} - ₦${(i.price*i.qty).toLocaleString()}`);
+  const total=cart.reduce((sum,i)=>sum+i.price*i.qty,0);
+  const msg=`Hello VKEYSWEET COLLECTION, I want to place an order\n\n${lines.join("\n")}\n\nTotal: ₦${total.toLocaleString()}\n\nPlease send me the payment details.`;
+  window.open(`https://wa.me/2347065796766?text=${encodeURIComponent(msg)}`,"_blank");
+}
+renderProducts();renderCart();
+</script>
+
+<script>
+let activeCategory='All';
+const VKEYSWEET_WA='2347065796766';
+
+function filterCategory(cat, btn){
+  activeCategory=cat;
+  document.querySelectorAll('.category-bar button').forEach(b=>b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  renderProducts();
+}
+
+function getFavs(){try{return JSON.parse(localStorage.getItem('vkeysweet_favs')||'[]')}catch(e){return[]}}
+function setFavs(v){localStorage.setItem('vkeysweet_favs',JSON.stringify(v))}
+function toggleFav(id){
+  let f=getFavs(); id=String(id);
+  f=f.includes(id)?f.filter(x=>x!==id):[...f,id];
+  setFavs(f); renderProducts();
+}
+
+function productMatches(p){
+  const q=(document.getElementById('search')?.value||'').toLowerCase();
+  const cat=(p.category||'').toLowerCase();
+  return (activeCategory==='All'||cat===activeCategory.toLowerCase()) &&
+    (!q || String(p.name).toLowerCase().includes(q) || cat.includes(q));
+}
+
+function openProduct(id){
+  const p=products.find(x=>String(x.id)===String(id));
+  if(!p)return;
+  const modal=document.getElementById('productModal');
+  modal.innerHTML=`<div class="modal-card">
+    <button class="modal-close" onclick="closeProduct()">✕</button>
+    <div class="modal-grid">
+      <div class="modal-image">${p.emoji||'🛍️'}</div>
+      <div>
+        <div class="hero-tag" style="color:#7c237f;background:#fff0f7;border-color:#f0dce8">VKEYSWEET COLLECTION</div>
+        <h2>${p.name}</h2>
+        <p class="price">₦${Number(p.price).toLocaleString()}</p>
+        <p style="color:#7c6b82;line-height:1.6">${p.description||'Beautifully selected for you. Contact us on WhatsApp for more details.'}</p>
+        <p class="stock">${p.stock>0?p.stock+' available':'Out of stock'}</p>
+        <div style="display:flex;gap:9px;margin-top:18px">
+          <button class="blue" ${p.stock<=0?'disabled':''} onclick="addToCart('${p.id}');closeProduct()">🛍️ Add to cart</button>
+          <button class="quick" onclick="toggleFav('${p.id}');">♡ Save</button>
+        </div>
+      </div>
+    </div>
+  </div>`;
+  modal.classList.add('show');
+}
+function closeProduct(){document.getElementById('productModal')?.classList.remove('show')}
+
+function orderDetails(){
+  const name=document.getElementById('custName')?.value.trim()||'Not provided';
+  const phone=document.getElementById('custPhone')?.value.trim()||'Not provided';
+  const address=document.getElementById('custAddress')?.value.trim()||'Not provided';
+  return {name,phone,address};
+}
+
+function checkout(){
+  if(!cart || cart.length===0){alert('Your cart is empty.');return;}
+  const d=orderDetails();
+  const lines=cart.map(i=>`${i.name} x${i.qty} = ₦${(Number(i.price)*i.qty).toLocaleString()}`).join('\\n');
+  const total=cart.reduce((s,i)=>s+Number(i.price)*i.qty,0);
+  const msg=`Hello VKEYSWEET COLLECTION 💕\\n\\nI want to place an order:\\n${lines}\\n\\nTotal: ₦${total.toLocaleString()}\\n\\nCustomer: ${d.name}\\nPhone: ${d.phone}\\nDelivery address: ${d.address}`;
+  window.open('https://wa.me/'+VKEYSWEET_WA+'?text='+encodeURIComponent(msg),'_blank');
+}
+function startCountdown(){
+  let end=Date.now()+12*60*60*1000;
+  setInterval(()=>{let s=Math.max(0,Math.floor((end-Date.now())/1000));let h=Math.floor(s/3600),m=Math.floor(s%3600/60),x=s%60;
+  const el=document.getElementById('countdown');if(el)el.textContent=[h,m,x].map(v=>String(v).padStart(2,'0')).join(':');},1000);
+}
+document.addEventListener('DOMContentLoaded',()=>{
+  const modal=document.createElement('div');modal.id='productModal';modal.className='product-modal';modal.onclick=e=>{if(e.target===modal)closeProduct()};document.body.appendChild(modal);
+  startCountdown();
+});
+</script>
+
+
+<script>
+const _oldRenderProducts = window.renderProducts;
+if(typeof _oldRenderProducts==='function'){
+  window.renderProducts=function(){
+    _oldRenderProducts();
+    const cards=[...document.querySelectorAll('#products .card')];
+    // Add quick-view/favorite controls to each visible card using the matching filtered product list.
+    const visible=products.filter(productMatches);
+    cards.forEach((card,i)=>{
+      const p=visible[i]; if(!p)return;
+      const info=card.querySelector('.info'); if(!info)return;
+      const buttons=info.querySelector('.product-actions'); if(buttons)return;
+      const fav=getFavs().includes(String(p.id));
+      const wrap=document.createElement('div');wrap.className='product-actions';
+      wrap.innerHTML=`<button class="quick" onclick="openProduct('${p.id}')">View</button><button class="fav" onclick="toggleFav('${p.id}')">${fav?'♥':'♡'}</button>`;
+      info.appendChild(wrap);
+    });
+  };
+  setTimeout(()=>window.renderProducts(),50);
+}
+</script>
+
+</body>
+</html>
